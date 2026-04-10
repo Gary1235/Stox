@@ -1,0 +1,135 @@
+:host {
+    display: block;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 2rem;
+    background: #fff;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    // position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* 圖表包裝 */
+.chart-wrapper {
+    position: relative;
+    max-width: 300px;
+    max-height: 300px;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.pie-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* 互動與動畫設定 
+       將 transform 設定在 group 上，讓文字跟著路徑一起動
+    */
+.slice-group {
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.27), opacity 0.3s ease;
+    transform-origin: 0 0;
+    /* 從圓心縮放 */
+    opacity: 1;
+}
+
+.slice-path {
+    stroke: #fff;
+    stroke-width: 0.01;
+}
+
+/* 文字樣式 */
+.slice-text {
+    font-size: 0.14px;
+    /* SVG 座標系下的字體大小 (半徑為1) */
+    fill: #fff;
+    font-weight: bold;
+    pointer-events: none;
+    /* 讓滑鼠事件穿透文字，直接觸發 group */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 互動效果 */
+.slice-group.active {
+    transform: scale(1.1);
+    /* 微微變大 */
+    z-index: 10;
+    /* 讓被選中的項目文字更亮一點 */
+}
+
+.slice-group.faded {
+    opacity: 0.4;
+    /* 未被選中的變淡 */
+}
+
+/* 圖例樣式 */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-width: 200px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: transparent;
+}
+
+.legend-item:hover,
+.legend-item.active {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.legend-item.faded {
+    opacity: 0.4;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.legend-text {
+    font-size: 1rem;
+    color: #333;
+    flex-grow: 1;
+}
+
+.legend-value {
+    font-weight: 600;
+    color: #666;
+}
+
+/* 響應式 */
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .legend {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

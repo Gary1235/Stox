@@ -1,0 +1,313 @@
+.dashboard-container {
+  max-width: 1500px;
+  /* 限制最大寬度，閱讀體驗較好 */
+  margin: 0 auto;
+  /* 置中 */
+  width: 100%;
+}
+
+/* 通用卡片樣式 */
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 1.5rem;
+  color: #111827;
+  margin: 0;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+/* Grid Layout for Summary */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card h3 {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-card .value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.summary-card .sub-text {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+/* 漲跌顏色 */
+.profit,
+.positive {
+  color: #10b981;
+}
+
+.loss,
+.negative {
+  color: #ef4444;
+}
+
+.trend {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* --- 詳細資料區 (Detail Area) --- */
+.detail-area {
+  gap: 5rem;
+  /* 預設是大螢幕樣式 */
+}
+
+/* Table Styling */
+.table-card {
+  flex: 2;
+  /* 佔據 2/3 空間，取代 width: 70% */
+  min-width: 0;
+  /* 關鍵：防止 flex item 在內容過長時撐爆容器 */
+}
+
+.card-header {
+  padding: 1.5rem;
+}
+
+.card-header h2 {
+  font-size: 1.125rem;
+  margin: 0;
+  color: #374151;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  /* 允許橫向捲動 */
+  -webkit-overflow-scrolling: touch;
+  /* 讓手機捲動更順暢 */
+  border-top: 1px solid #f3f4f6;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+  /* 關鍵：手機上禁止文字自動換行，保持表格整齊 */
+}
+
+th {
+  background-color: #f9fafb;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+}
+
+td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* 表格互動優化 */
+tbody tr {
+  transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* 讓表格數字對齊更易讀 */
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.ticker-badge {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.btn-icon:hover {
+  opacity: 1;
+}
+
+// pie-chart
+.pie-card {
+  flex: 1;
+  /* 佔據 1/3 空間，取代 width: 30% */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+/* 買賣btn */
+.showcase-row {
+  border-radius: 16px;
+  text-align: center;
+  display: flex;
+  gap: 5px;
+}
+
+.btn {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 70px;
+}
+
+.btn-soft {
+  padding: 5px 15px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+.btn-soft.buy {
+  background-color: #d1fae5; /* 淺綠底 */
+  color: #065f46; /* 深綠字 */
+}
+
+.btn-soft.buy:hover {
+  background-color: #a7f3d0;
+}
+
+.btn-soft.sell {
+  background-color: #fee2e2; /* 淺紅底 */
+  color: #991b1b; /* 深紅字 */
+}
+
+.btn-soft.sell:hover {
+  background-color: #fecaca;
+}
+
+/* 圖示 (選用 CSS 繪製簡單箭頭，避免引入外部圖庫) */
+.icon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  margin-right: 6px;
+}
+
+.icon-up {
+  border-bottom: 5px solid currentColor;
+}
+
+.icon-down {
+  border-top: 5px solid currentColor;
+}
+
+@media (max-width: 992px) {
+  /* 平板尺寸：將詳細資料區改為垂直堆疊 */
+  .detail-area {
+    flex-direction: column;
+  }
+
+  .table-card,
+  .pie-card {
+    width: 100%;
+    max-width: 100%;
+    /* 讓卡片填滿寬度 */
+    flex: auto;
+  }
+
+  /* 在平板上，或許你想讓圓餅圖在表格上面？可以使用 order */
+  /* .pie-card { order: -1; } 
+            */
+}
+
+@media (max-width: 576px) {
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+    /* 強制單欄 */
+    gap: 1rem;
+  }
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    /* 減少表格內距 */
+  }
+
+  .pie-card {
+    padding: 1rem;
+  }
+}

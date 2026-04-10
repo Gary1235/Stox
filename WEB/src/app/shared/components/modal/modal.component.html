@@ -1,0 +1,21 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onBackdropClick($event)" role="dialog" aria-modal="true">
+    <div class="modal-container" [ngClass]="'size-' + size()">
+      @if (showCloseBtn()) {
+        <button class="close-btn" (click)="close()" aria-label="Close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      }
+
+      <div class="modal-content">
+        <ng-content></ng-content>
+        <ng-content select="[modal-header]"></ng-content>
+        <ng-content select="[modal-body]"></ng-content>
+        <ng-content select="[modal-footer]"></ng-content>
+      </div>
+    </div>
+  </div>
+}

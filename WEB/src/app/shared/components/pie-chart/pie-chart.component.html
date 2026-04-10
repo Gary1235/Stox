@@ -1,0 +1,29 @@
+<div class="container" (mouseleave)="onMouseLeave()">
+  <!-- 圓餅圖區域 -->
+  <div class="chart-wrapper">
+    <svg viewBox="-1.1 -1.1 2.2 2.2" class="pie-svg">
+      <!-- 使用 Group 包裹扇形與文字，以便一起放大 -->
+      @for (slice of slices(); track slice.label; let i = $index) {
+        <g class="slice-group" [class.active]="hoveredIndex() === i" [class.faded]="hoveredIndex() !== null && hoveredIndex() !== i" (mouseenter)="setHovered(i)">
+          <!-- 扇形 -->
+          <path [attr.d]="slice.path" [style.fill]="slice.color" class="slice-path"></path>
+
+          <!-- 百分比文字 -->
+          <text [attr.x]="slice.textX" [attr.y]="slice.textY" class="slice-text" text-anchor="middle" dominant-baseline="middle">{{ (slice.percent * 100).toFixed(1) }}%</text>
+        </g>
+      }
+    </svg>
+  </div>
+
+  <!-- 圖例區域 -->
+  <div class="legend">
+    @for (item of chartData(); track item.label; let i = $index) {
+      <div class="legend-item" [class.active]="hoveredIndex() === i" [class.faded]="hoveredIndex() !== null && hoveredIndex() !== i" (mouseenter)="setHovered(i)">
+        <span class="legend-color" [style.background-color]="item.color"></span>
+        <span class="legend-text">{{ item.label }}</span>
+        <!-- 圖例保留數值，或依需求也可只留 label -->
+        <!-- <span class="legend-value">{{ item.value }}</span> -->
+      </div>
+    }
+  </div>
+</div>

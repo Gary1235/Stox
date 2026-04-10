@@ -1,0 +1,28 @@
+<div class="app-wrapper">
+  <header class="navbar">
+    <div class="brand">
+      <span class="icon">📈</span> MyStock Portfolio
+    </div>
+    <nav>
+      <ul>
+        <li><a href="/dashboard" class="active">儀表板</a></li>
+        <li><a href="#">交易紀錄</a></li>
+        <li><a href="#">設定</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 MyStock Dashboard. Data provided for personal use.</p>
+      <div class="market-status">
+        <span class="status-dot online"></span> 美股市場: 開盤中
+      </div>
+    </div>
+  </footer>
+
+</div>

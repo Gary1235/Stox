@@ -1,0 +1,33 @@
+# --- 建置輸出 (Build Output) ---
+[Bb]in/
+[Oo]bj/
+publish/
+
+# --- 使用者設定與快取 ---
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.idea/
+.vscode/
+
+# --- 套件管理 (NuGet) ---
+# 現代 .NET 通常不需要排除 packages/ 因為它們存放在全域快取
+# 但如果你有本機套件夾則需排除
+packages/
+*.nupkg
+
+# --- 測試結果 ---
+TestResults/
+/performance/
+
+# --- 敏感資訊 (建議排除) ---
+appsettings.Development.json
+secrets.json
+
+# --- 作業系統 ---
+.DS_Store
+Thumbs.db
+
+# --- 暫存與 Log ---
+*.log

@@ -1,0 +1,435 @@
+:host {
+  /* Theme Variables */
+  --primary-color: #4f46e5;
+  --primary-light-color: #eef2ff;
+  --text-main-color: #1f2937;
+  --text-sub-color: #6b7280;
+  --bg-body-color: #f3f4f6;
+  --bg-card-color: #ffffff;
+  --border-color: #e5e7eb;
+
+  /* Status Colors */
+  --status-active-color: #10b981;
+  --status-active-bg: #d1fae5;
+  --status-busy-color: #f59e0b;
+  --status-busy-bg: #fef3c7;
+  --status-offline-color: #9ca3af;
+  --status-offline-bg: #f3f4f6;
+
+  /* Layout & Reset */
+  display: block;
+  background-color: var(--bg-body-color);
+  font-family:
+    'Noto Sans TC',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+:host * {
+  box-sizing: border-box;
+}
+
+.main-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --- Table Container --- */
+.table-container {
+  background: var(--bg-card-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-scroll-area {
+  height: 400px;
+  overflow: auto;
+  position: relative;
+}
+
+/* --- Native Table Styles --- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 100%;
+  table-layout: auto;
+}
+
+/* Table Header */
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f9fafb;
+  color: var(--text-sub-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  text-align: center; /* 👈 改為置中 */
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.data-table thead th:hover {
+  color: var(--primary-color);
+}
+
+.sort-icon {
+  display: inline-block;
+  margin-left: 4px;
+  opacity: 0.3;
+}
+.sort-icon.active {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* Table Body */
+.data-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main-color);
+  font-size: 0.95rem;
+  vertical-align: middle;
+  white-space: nowrap;
+  text-align: center; /* 👈 新增置中 */
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Scrollbar Styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+/* --- Utility Classes (Components) --- */
+.avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  margin-right: 12px;
+  font-weight: 600;
+}
+
+.dept-badge {
+  background: var(--bg-body-color);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text-sub-color);
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-indicator::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.status-indicator.active {
+  background: var(--status-active-bg);
+  color: var(--status-active-color);
+}
+.status-indicator.active::before {
+  background: var(--status-active-color);
+}
+.status-indicator.busy {
+  background: var(--status-busy-bg);
+  color: var(--status-busy-color);
+}
+.status-indicator.busy::before {
+  background: var(--status-busy-color);
+}
+.status-indicator.offline {
+  background: var(--status-offline-bg);
+  color: var(--status-offline-color);
+}
+.status-indicator.offline::before {
+  background: var(--status-offline-color);
+}
+
+/* --- Empty State --- */
+.no-data {
+  padding: 40px;
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-data-text {
+  color: var(--text-sub-color);
+}
+
+/* --- Footer --- */
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #f9fafb;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-sub-color);
+}
+
+.page-select {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: white;
+  color: var(--text-main-color);
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.page-select:focus {
+  border-color: var(--primary-color);
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.page-info {
+  color: var(--text-sub-color);
+  font-size: 0.9rem;
+}
+
+.text-gray {
+  color: #9ca3af;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-page,
+.btn-page-number {
+  border: 1px solid var(--border-color);
+  background: white;
+  color: var(--text-main-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  min-width: 32px;
+}
+
+.btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-page:not(:disabled):hover,
+.btn-page-number:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-page-number.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* ==========================================
+   操作按鈕區塊 (Action Row) & 按鈕樣式
+   ========================================== */
+.action-row {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 👈 新增置中對齊 */
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+  outline: none;
+
+  .icon {
+    margin-right: 4px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.btn-soft {
+  &.buy {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+
+    &:hover {
+      background-color: rgba(34, 197, 94, 0.2);
+    }
+  }
+
+  &.sell {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+
+    &:hover {
+      background-color: rgba(239, 68, 68, 0.2);
+    }
+  }
+}
+
+.btn-default {
+  background-color: #f1f5f9;
+  color: #475569;
+  &:hover {
+    background-color: #e2e8f0;
+  }
+}
+
+/* --- Mobile Styles (RWD) for Native Table --- */
+@media (max-width: 768px) {
+  .data-table,
+  .data-table tbody,
+  .data-table tr,
+  .data-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table tbody tr {
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .data-table tbody tr:hover {
+    background: #fff;
+  }
+
+  .data-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bg-body-color);
+    min-height: auto;
+    white-space: normal;
+  }
+
+  .data-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .data-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-sub-color);
+    font-size: 0.85rem;
+    margin-right: 16px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  /* 在手機版讓動作按鈕群靠右對齊 */
+  .action-row {
+    justify-content: flex-end;
+  }
+
+  .table-footer {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .footer-right {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .page-size-selector,
+  .pagination-controls {
+    justify-content: center;
+  }
+}

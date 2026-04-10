@@ -1,0 +1,123 @@
+<div class="main-container">
+  <div class="table-container">
+    <div class="table-scroll-area custom-scrollbar">
+      <table class="data-table">
+        <thead>
+          <tr>
+            @for (col of columns(); track col.key) {
+              <th (click)="sort(col.key)">
+                {{ col.label }}
+                <span class="sort-icon" [class.active]="currentSort().col === col.key">
+                  {{ getSortIcon(col.key) }}
+                </span>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @if (rowData().list.length > 0) {
+            @for (item of rowData().list; track item; let idx = $index) {
+              <tr>
+                @for (col of columns(); track col.key) {
+                  <td [attr.data-label]="col.label">
+                    @switch (col.type || 'text') {
+                      @case ('seq') {
+                        {{ (currentPage() - 1) * pageSize() + idx + 1 }}
+                      }
+
+                      @case ('currency') {
+                        {{ item[col.key] | currency: col.pipeArgs || 'USD' }}
+                      }
+
+                      @case ('date') {
+                        {{ item[col.key] | date: col.pipeArgs || 'yyyy/MM/dd' }}
+                      }
+
+                      @case ('action') {
+                        <div class="action-row">
+                          @for (btn of col.actions; track btn.actionKey) {
+                            <button [class]="btn.btnClass || 'btn-default'" (click)="onAction(btn.actionKey, item)">
+                              @if (btn.icon) {
+                                <span [class]="'icon ' + btn.icon"></span>
+                              }
+                              {{ btn.label }}
+                            </button>
+                          }
+                        </div>
+                      }
+
+                      @case ('select') {
+                        <select class="form-select" [(ngModel)]="item[col.key]" (ngModelChange)="onModelChange(col.key, item, $event)">
+                          @for (opt of col.options; track opt.value) {
+                            <option [value]="opt.value">{{ opt.label }}</option>
+                          }
+                        </select>
+                      }
+
+                      @case ('checkbox') {
+                        <input type="checkbox" class="form-checkbox" [(ngModel)]="item[col.key]" (ngModelChange)="onModelChange(col.key, item, $event)" />
+                      }
+
+                      @case ('radio') {
+                        <div class="radio-group">
+                          @for (opt of col.options; track opt.value) {
+                            <label class="radio-label">
+                              <input type="radio" [name]="col.key + '_' + idx" [value]="opt.value" [(ngModel)]="item[col.key]" (ngModelChange)="onModelChange(col.key, item, $event)" />
+                              {{ opt.label }}
+                            </label>
+                          }
+                        </div>
+                      }
+
+                      @default {
+                        {{ item[col.key] }}
+                      }
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          } @else {
+            <tr class="no-data-row">
+              <td [attr.colspan]="columns().length">
+                <div class="no-data">
+                  <p class="no-data-text">沒有資料</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      <div class="page-size-selector">
+        <label class="size-label">每頁顯示：</label>
+        <div class="select-wrapper">
+          <select class="page-select" [ngModel]="pageSize()" (ngModelChange)="updatePageSize($event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }} 筆</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <div class="page-info">
+          {{ filteredData().length > 0 ? (currentPage() - 1) * pageSize() + 1 : 0 }} -
+          {{ Math.min(currentPage() * pageSize(), filteredData().length) }}
+          <span class="text-gray">/ 共 {{ filteredData().length }} 筆</span>
+        </div>
+        <div class="pagination-controls">
+          <button class="btn-page" [disabled]="currentPage() === 1 || filteredData().length === 0" (click)="setPage(currentPage() - 1)">❮</button>
+
+          <div class="page-numbers">
+            <button *ngFor="let p of totalPagesArray()" class="btn-page-number" [class.active]="p === currentPage()" (click)="setPage(p)">
+              {{ p }}
+            </button>
+          </div>
+
+          <button class="btn-page" [disabled]="currentPage() === totalPages() || filteredData().length === 0" (click)="setPage(currentPage() + 1)">❯</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<form [formGroup]="tradeForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label>交易類型</label>
+    <div class="radio-group">
+      <input type="radio" id="buy" formControlName="actionType" [value]="transactionType.Buy" />
+      <label for="buy" class="btn-radio buy">買入</label>
+
+      <input type="radio" id="sell" formControlName="actionType" [value]="transactionType.Sell" />
+      <label for="sell" class="btn-radio sell">賣出</label>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>股票代碼</label>
+    <input type="text" formControlName="code" placeholder="例如: AAPL" />
+    <div class="error" *ngIf="tradeForm.get('code')?.touched && tradeForm.get('code')?.errors?.['required']">請輸入股票代碼</div>
+  </div>
+
+  <div class="form-group">
+    <label>股票名稱 (選填)</label>
+    <input type="text" formControlName="name" placeholder="例如: 蘋果" />
+  </div>
+
+  <div class="row">
+    <div class="form-group col">
+      <label>成交數量</label>
+      <input type="number" formControlName="tradeQty" min="1" placeholder="0" />
+    </div>
+    <div class="form-group col">
+      <label>成交價格 (USD)</label>
+      <input type="number" formControlName="tradePrice" step="0.01" placeholder="0.00" />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>成交日期</label>
+    <input type="date" formControlName="tradeDate" />
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-secondary" (click)="$event.preventDefault(); onCancel()">取消</button>
+    <button class="btn-primary" [disabled]="tradeForm.invalid">確認提交</button>
+  </div>
+</form>

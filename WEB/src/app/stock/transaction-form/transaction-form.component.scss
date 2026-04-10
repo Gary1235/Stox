@@ -1,0 +1,167 @@
+// 變數定義 (你可以依據你的專案主色調微調)
+$primary-color: #3b82f6; // 預設藍色
+$buy-color: #10b981; // 買入綠色
+$sell-color: #ef4444; // 賣出紅色
+$text-main: #1f2937;
+$text-muted: #6b7280;
+$border-color: #e5e7eb;
+$bg-light: #f9fafb;
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; // 欄位之間的間距
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-main;
+  }
+
+  input[type='text'],
+  input[type='number'],
+  input[type='date'] {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    font-size: 1rem;
+    color: $text-main;
+    background-color: #ffffff;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+    }
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    // 當欄位驗證錯誤時的樣式
+    &.ng-invalid.ng-touched {
+      border-color: $sell-color;
+      background-color: #fef2f2;
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($sell-color, 0.15);
+      }
+    }
+  }
+}
+
+// 💡 客製化 Radio Button (買入/賣出切換)
+.radio-group {
+  display: flex;
+  gap: 1rem;
+
+  input[type='radio'] {
+    display: none; // 隱藏原本醜醜的圓圈圈
+
+    // 買入被選中的狀態
+    &#buy:checked + .btn-radio.buy {
+      background-color: $buy-color;
+      color: white;
+      border-color: $buy-color;
+      box-shadow: 0 4px 6px -1px rgba($buy-color, 0.3);
+    }
+
+    // 賣出被選中的狀態
+    &#sell:checked + .btn-radio.sell {
+      background-color: $sell-color;
+      color: white;
+      border-color: $sell-color;
+      box-shadow: 0 4px 6px -1px rgba($sell-color, 0.3);
+    }
+  }
+
+  .btn-radio {
+    flex: 1;
+    text-align: center;
+    padding: 0.625rem 1rem;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    background-color: $bg-light;
+    color: $text-muted;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f3f4f6;
+    }
+  }
+}
+
+// 雙欄排版 (用於數量與價格)
+.row {
+  display: flex;
+  gap: 1rem;
+
+  .col {
+    flex: 1;
+  }
+}
+
+// 錯誤訊息文字
+.error {
+  color: $sell-color;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+// 表單底部的按鈕區塊
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $border-color;
+
+  button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary {
+    background-color: $bg-light;
+    color: $text-main;
+    border: 1px solid $border-color;
+
+    &:hover {
+      background-color: #e5e7eb;
+    }
+  }
+
+  .btn-primary {
+    background-color: $primary-color;
+    color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    &:hover:not(:disabled) {
+      background-color: darken($primary-color, 10%);
+    }
+
+    &:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.7;
+      box-shadow: none;
+    }
+  }
+}

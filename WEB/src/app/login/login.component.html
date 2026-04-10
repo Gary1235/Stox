@@ -1,0 +1,101 @@
+<div class="login-wrapper">
+  <div class="tech-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="dashboard-container">
+    <div class="login-card-container">
+      <div class="card login-card animate-fade-in">
+        <div class="card-header text-center">
+          <div class="logo-box">
+            <svg viewBox="0 0 24 24" class="tech-icon">
+              <path fill="currentColor" d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" />
+            </svg>
+          </div>
+          <h1>歡迎回來</h1>
+          <p class="sub-text">請輸入您的憑據以訪問系統儀表板</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="handleLogin($event)" class="login-form">
+          <div class="form-group">
+            <label for="account">帳號</label>
+            <div class="input-wrapper">
+              <input type="text" id="account" formControlName="account" placeholder="輸入帳號/電子郵件" class="form-control" />
+            </div>
+            @if (f.account.invalid && (f.account.dirty || f.account.touched)) {
+              <small class="error-text">請輸入帳號</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="password">密碼</label>
+              <a href="#" class="forgot-link">忘記密碼?</a>
+            </div>
+            <div class="input-wrapper">
+              <input [type]="showPassword() ? 'text' : 'password'" id="password" formControlName="password" placeholder="••••••••" class="form-control" />
+              <button type="button" class="btn-icon toggle-password" (click)="togglePasswordVisibility()">
+                <span [class]="showPassword() ? 'eye-off' : 'eye'"></span>
+              </button>
+            </div>
+            @if (f.password.invalid && (f.password.dirty || f.password.touched)) {
+              @if (f.password.errors?.['required']) {
+                <small class="error-text">請輸入密碼</small>
+              } @else if (f.password.errors?.['minlength']) {
+                <small class="error-text">密碼長度至少需 6 碼</small>
+              }
+            }
+          </div>
+
+          <div class="remember-me">
+            <input type="checkbox" id="remember" />
+            <label for="remember">保持登入狀態</label>
+          </div>
+
+          <button type="submit" class="btn-primary btn-block" [disabled]="isLoading() || form.invalid">
+            @if (isLoading()) {
+              <span class="loader"></span>
+            } @else {
+              登入系統
+            }
+          </button>
+
+          <div class="divider">
+            <span>或使用以下方式</span>
+          </div>
+
+          <div class="social-login">
+            <button type="button" class="btn-secondary">
+              <svg class="icon-sm" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 4.91,16.25 4.91,12C4.91,7.75 8.38,4.73 12.19,4.73C15.31,4.73 17.1,6.73 17.1,6.73L19.05,4.72C19.05,4.72 16.59,2 12.18,2C6.51,2 2,6.58 2,12C2,17.42 6.51,22 12.18,22C17.47,22 21.39,18.13 21.39,12C21.39,11.69 21.35,11.1 21.35,11.1V11.1Z"
+                />
+              </svg>
+              Google
+            </button>
+            <button type="button" class="btn-secondary">
+              <svg class="icon-sm" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.49,20.14 9.49,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.59 14.5,20.67 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z"
+                />
+              </svg>
+              GitHub
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="auth-footer animate-fade-in-delayed">還沒有帳號？ <a href="#" class="bold">立即註冊</a></div>
+    </div>
+  </div>
+
+  @if (loginStatus()) {
+    <div class="status-toast" [class.success]="loginStatus() === 'success'">
+      {{ loginStatus() === 'success' ? '登入成功！正在跳轉...' : '驗證失敗，請檢查資料' }}
+    </div>
+  }
+</div>
