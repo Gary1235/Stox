@@ -17,6 +17,8 @@ public partial class StoxContext : DbContext
 
     public virtual DbSet<InventoryLot> InventoryLots { get; set; }
 
+    public virtual DbSet<StockDailyPrice> StockDailyPrices { get; set; }
+
     public virtual DbSet<Transaction> Transactions { get; set; }
 
     public virtual DbSet<TransactionDetail> TransactionDetails { get; set; }
@@ -46,6 +48,26 @@ public partial class StoxContext : DbContext
                 .HasForeignKey(d => d.TransactionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Inventory__Trans__08B54D69");
+        });
+
+        modelBuilder.Entity<StockDailyPrice>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__StockDai__3214EC07731A69D9");
+
+            entity.ToTable("StockDailyPrice");
+
+            entity.HasIndex(e => e.CreatedDate, "IX_StockDetailPrices_date");
+
+            entity.HasIndex(e => new { e.StockCode, e.CreatedDate }, "UQ_Stock_Date").IsUnique();
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.AdjClose).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.ClosePrice).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.HighPrice).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.LowPrice).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.OpenPrice).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.StockCode).HasMaxLength(30);
         });
 
         modelBuilder.Entity<Transaction>(entity =>

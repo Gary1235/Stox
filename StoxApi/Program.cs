@@ -1,4 +1,6 @@
 using System.Text;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -46,9 +48,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// 加入 Hangfire 服務與設定儲存體
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireDB"), new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+    }));
+// 加入 Hangfire 的背景處理伺服器 (Worker)
+builder.Services.AddHangfireServer();
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// 啟用 Hangfire 儀表板 (預設網址為 /hangfire)
+app.UseHangfireDashboard();
+
+app.MapGet("/", () => "Hangfire 測試啟動成功！請前往 /hangfire 查看儀表板。");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -10,7 +10,8 @@ namespace StoxApi.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IStockService, StockService>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<IFinnhubService, FinnhubService>();
+            services.AddHttpClient<FinnhubService>();
             return services;
         }
     }

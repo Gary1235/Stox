@@ -34,6 +34,10 @@ public class StockViewModel
     /// 最新收盤價格
     /// </summary>
     public decimal ClosePrice { get; set; }
+    /// <summary>
+    /// 即時價格
+    /// </summary>
+    public decimal LivePrice { get; set; }
 }
 
 public class TransactionViewModel
@@ -60,4 +64,16 @@ public class TransactionViewModel
     public DateTime TradeDate { get; set; }
 
     public TransactionType ActionType { get; set; }
+}
+
+public class StockQuoteViewModel
+{
+    /// <summary>
+    /// 股票代碼
+    /// </summary>
+    public string? Code { get; set; }
+    /// <summary>
+    /// 最新價格
+    /// </summary>
+    public decimal LivePrice { get; set; }
 }

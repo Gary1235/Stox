@@ -20,15 +20,27 @@ public interface IStockService
     /// <param name="model"></param>
     /// <returns></returns>
     public SaveChangeResult SellStock(TransactionViewModel model);
+    /// <summary>
+    /// 取得 所有已追蹤的股票即時價格
+    /// </summary>
+    /// <returns></returns>
+    public Task<List<StockQuoteViewModel>> GetAllStockQuote();
+    /// <summary>
+    /// 計入每日股價(開盤、收盤、當日最高/低)
+    /// </summary>
+    /// <returns></returns>
+    public SaveChangeResult RecordDailyPrice();
 }
 
 public class StockService : IStockService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IFinnhubService _finnhubService;
 
-    public StockService(IUnitOfWork unitOfWork)
+    public StockService(IUnitOfWork unitOfWork, IFinnhubService finnhubService)
     {
         _unitOfWork = unitOfWork;
+        _finnhubService = finnhubService;
     }
 
     public List<StockViewModel> GetStockList(StockSearchViewModel search)
@@ -209,4 +221,48 @@ public class StockService : IStockService
         return result;
     }
 
+    /// <summary>
+    /// 取得 所有已追蹤的股票即時價格
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<StockQuoteViewModel>> GetAllStockQuote()
+    {
+        var stockQuotes = new List<StockQuoteViewModel>();
+
+        var allStockCode = _unitOfWork.GetRepository<InventoryLot>().AsNoTracking()
+        .Select(x => x.StockCode)
+        .Distinct()
+        .ToList();
+
+        foreach (var code in allStockCode)
+        {
+            var quote = await _finnhubService.GetQuoteAsync(code);
+
+            if (quote != null)
+            {
+                stockQuotes.Add(new StockQuoteViewModel
+                {
+                    Code = code,
+                    LivePrice = quote.CurrentPrice,
+                });
+            }
+        }
+
+        // todo 通知功能(先做發mail) 必須先建一個table 紀錄要追蹤的價位通知(超過設定高位/低位)
+
+        return stockQuotes;
+    }
+
+    /// <summary>
+    /// 計入每日股價(開盤、收盤、當日最高/低)
+    /// </summary>
+    /// <returns></returns>
+    public SaveChangeResult RecordDailyPrice()
+    {
+        // 只記錄有追蹤的股票
+        // 只從追蹤開始到取消追蹤這段時間
+        // 意義??
+
+        return SaveChangeResult.Failure("此功能需要在想一下細節");
+    }
 }
