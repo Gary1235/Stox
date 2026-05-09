@@ -10,6 +10,7 @@
       "@components/*": ["src/app/shared/components/*"],
       "@features/*": ["src/app/features/*"],
       "@services/*": ["src/app/core/services/*"],
+      "@models/*":["src/app/core/models/*"],
       "@environments/*": ["src/environments/*"]
     }
   },

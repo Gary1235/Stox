@@ -6,9 +6,9 @@ using StoxApi.Models.Stox;
 
 public interface IAuthService
 {
-    public string GenerateJwtToken(string username);
+    public string GenerateJwtToken(User user);
 
-    public bool ValidUserLogin(LoginDto dto);
+    public User? ValidUserLogin(LoginDto dto);
 
     public SaveChangeResult CreateAdmin();
 }
@@ -24,7 +24,7 @@ public class AuthService : IAuthService
         _unitOfWork = unitOfWork;
     }
 
-    public string GenerateJwtToken(string username)
+    public string GenerateJwtToken(User user)
     {
         var jwtSettings = _config.GetSection("Jwt");
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
@@ -33,8 +33,10 @@ public class AuthService : IAuthService
         // 設定 Token 內含的資訊 (Claims)
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, username),
-            new Claim(ClaimTypes.Role, "Admin")
+            new Claim("Account", user.Account),
+            new Claim("UserName", user.UserName ?? ""),
+            new Claim("Role", "Admin"),
+            new Claim("UserId", user.Id.ToString())
         };
 
         var token = new JwtSecurityToken(
@@ -47,13 +49,11 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public bool ValidUserLogin(LoginDto dto)
+    public User? ValidUserLogin(LoginDto dto)
     {
-        var isValid = false;
+        var user = _unitOfWork.GetRepository<User>().Where(x => x.Account == dto.Username && x.Password == dto.Password).FirstOrDefault();
 
-        isValid = _unitOfWork.GetRepository<User>().Where(x => x.Account == dto.Username && x.Password == dto.Password).Any();
-
-        return isValid;
+        return user;
     }
 
     public SaveChangeResult CreateAdmin()

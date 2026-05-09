@@ -15,15 +15,15 @@ public partial class StoxContext : DbContext
     {
     }
 
-    public virtual DbSet<InventoryLot> InventoryLots { get; set; }
+    public virtual DbSet<InventoryLot> InventoryLot { get; set; }
 
-    public virtual DbSet<StockDailyPrice> StockDailyPrices { get; set; }
+    public virtual DbSet<StockDailyPrice> StockDailyPrice { get; set; }
 
-    public virtual DbSet<Transaction> Transactions { get; set; }
+    public virtual DbSet<Transaction> Transaction { get; set; }
 
-    public virtual DbSet<TransactionDetail> TransactionDetails { get; set; }
+    public virtual DbSet<TransactionDetail> TransactionDetail { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<User> User { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:StoxDB");
@@ -32,92 +32,93 @@ public partial class StoxContext : DbContext
     {
         modelBuilder.Entity<InventoryLot>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC075B881B13");
+            entity.HasKey(e => e.Id).HasName("PK__Inventor__3214EC073017AB67");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.BuyDate).HasColumnType("datetime");
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CostPrice).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.OriginalQty).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.RemainingQty).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.StockCode).HasMaxLength(20);
-            entity.Property(e => e.StockName).HasMaxLength(50);
-            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+            entity.Property(e => e.StockName).HasMaxLength(100);
 
-            entity.HasOne(d => d.Transaction).WithMany(p => p.InventoryLots)
+            entity.HasOne(d => d.CreatedUser).WithMany(p => p.InventoryLotCreatedUser)
+                .HasForeignKey(d => d.CreatedUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_InventoryLot_User_Created");
+
+            entity.HasOne(d => d.Transaction).WithMany(p => p.InventoryLot)
                 .HasForeignKey(d => d.TransactionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Inventory__Trans__08B54D69");
+                .HasConstraintName("FK_InventoryLot_Transaction");
+
+            entity.HasOne(d => d.UpdatedUser).WithMany(p => p.InventoryLotUpdatedUser)
+                .HasForeignKey(d => d.UpdatedUserId)
+                .HasConstraintName("FK_InventoryLot_User_Updated");
         });
 
         modelBuilder.Entity<StockDailyPrice>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__StockDai__3214EC07731A69D9");
+            entity.HasKey(e => e.Id).HasName("PK__StockDai__3214EC07491B0C75");
 
-            entity.ToTable("StockDailyPrice");
-
-            entity.HasIndex(e => e.CreatedDate, "IX_StockDetailPrices_date");
-
-            entity.HasIndex(e => new { e.StockCode, e.CreatedDate }, "UQ_Stock_Date").IsUnique();
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.AdjClose).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.ClosePrice).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.HighPrice).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.LowPrice).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.OpenPrice).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.StockCode).HasMaxLength(30);
+            entity.Property(e => e.StockCode).HasMaxLength(20);
         });
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07FA520E67");
+            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07C3EF2666");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Fee).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Fee).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.Quantity).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.StockCode).HasMaxLength(20);
-            entity.Property(e => e.StockName).HasMaxLength(50);
-            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.TradeDate).HasColumnType("datetime");
+            entity.Property(e => e.StockName).HasMaxLength(100);
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 4)");
+
+            entity.HasOne(d => d.CreatedUser).WithMany(p => p.Transaction)
+                .HasForeignKey(d => d.CreatedUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Transaction_User");
         });
 
         modelBuilder.Entity<TransactionDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07998EBD2A");
+            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC0731DCC10B");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.Qty).HasColumnType("decimal(18, 4)");
-            entity.Property(e => e.RealizedProfit).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.RealizedProfit).HasColumnType("decimal(18, 4)");
 
-            entity.HasOne(d => d.InventoryLot).WithMany(p => p.TransactionDetails)
+            entity.HasOne(d => d.InventoryLot).WithMany(p => p.TransactionDetail)
                 .HasForeignKey(d => d.InventoryLotId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__Inven__0C85DE4D");
+                .HasConstraintName("FK_TransactionDetail_InventoryLot");
 
-            entity.HasOne(d => d.SellTransaction).WithMany(p => p.TransactionDetails)
+            entity.HasOne(d => d.SellTransaction).WithMany(p => p.TransactionDetail)
                 .HasForeignKey(d => d.SellTransactionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Transacti__SellT__0B91BA14");
+                .HasConstraintName("FK_TransactionDetail_SellTransaction");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC07FB05B842");
+            entity.HasKey(e => e.Id).HasName("PK__User__3214EC07411AF776");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.Account)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Email)
-                .HasMaxLength(60)
-                .IsUnicode(false);
-            entity.Property(e => e.Password).HasMaxLength(500);
-            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())", "DF__User__Id__4AB81AF0");
+            entity.Property(e => e.Account).HasMaxLength(50);
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())", "DF__User__CreatedDat__4BAC3F29");
+            entity.Property(e => e.Email).HasMaxLength(255);
+            entity.Property(e => e.Password).HasMaxLength(255);
+            entity.Property(e => e.UserName).HasMaxLength(90);
         });
 
         OnModelCreatingPartial(modelBuilder);

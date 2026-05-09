@@ -22,9 +22,10 @@ public class AuthController : ControllerBase
     public IActionResult Login([FromBody] LoginDto request)
     {
         // 驗證帳號&密碼
-        if (_authService.ValidUserLogin(request))
+        var user = _authService.ValidUserLogin(request);
+        if (user != null)
         {
-            var token = _authService.GenerateJwtToken(request.Username);
+            var token = _authService.GenerateJwtToken(user);
             return Ok(new { Token = token });
         }
         return Unauthorized("帳號或密碼錯誤");

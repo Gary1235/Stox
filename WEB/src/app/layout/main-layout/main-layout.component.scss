@@ -7,21 +7,33 @@
 .app-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* 重點：最小高度為視窗高度 */
-  background-color: #f3f4f6; /* 淺灰背景 */
+  min-height: 100vh;
+  /* 重點：最小高度為視窗高度 */
+  background-color: #f3f4f6;
+  /* 淺灰背景 */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Header */
+/* Header 核心調整 */
 .navbar {
-  background-color: #1f2937; /* 深色導航列 */
+  background-color: #1f2937;
+  /* 深色導航列 */
   color: white;
   padding: 0 1.5rem;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  /* 完美推開左右兩側 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 新增：左側群組 (Logo + 選單) */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  /* Logo 和選單拉開一點距離比較有呼吸感 */
 }
 
 .brand {
@@ -47,17 +59,75 @@
   transition: color 0.2s;
 }
 
-.navbar a:hover, .navbar a.active {
+.navbar a:hover,
+.navbar a.active {
   color: #fff;
+}
+
+/* --- 新增：右側使用者區塊樣式 --- */
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* 純文字頭像 (GA) 樣式，配合深色 Navbar 調整配色 */
+.text-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #374151;
+  /* 深灰底色 */
+  color: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  border: 1px solid #4b5563;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #f3f4f6;
+  margin-right: 0.5rem;
+}
+
+/* 導覽列專用的登出/登入按鈕 */
+.btn-nav-outline {
+  background-color: transparent;
+  color: #d1d5db;
+  border: 1px solid #4b5563;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.btn-nav-outline:hover {
+  background-color: #374151;
+  color: white;
+  border-color: #6b7280;
 }
 
 /* Main Content - 推擠 Footer 的關鍵 */
 .main-content {
-  flex: 1; /* 重點：佔據所有剩餘空間 */
+  flex: 1;
+  /* 重點：佔據所有剩餘空間 */
   padding: 2rem;
   max-width: 100%;
   width: 100%;
-  margin: 0 auto; /* 置中 */
+  margin: 0 auto;
+  /* 置中 */
   box-sizing: border-box;
 }
 
@@ -66,7 +136,8 @@
   background-color: #fff;
   border-top: 1px solid #e5e7eb;
   padding: 1rem 0;
-  margin-top: auto; /* 雙重保險，確保置底 */
+  margin-top: auto;
+  /* 雙重保險，確保置底 */
 }
 
 .footer-content {
@@ -88,5 +159,6 @@
 }
 
 .status-dot.online {
-  background-color: #10b981; /* 綠燈 */
+  background-color: #10b981;
+  /* 綠燈 */
 }

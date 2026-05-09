@@ -29,7 +29,11 @@ public partial class InventoryLot
 
     public DateTime? UpdatedDate { get; set; }
 
+    public virtual User CreatedUser { get; set; } = null!;
+
     public virtual Transaction Transaction { get; set; } = null!;
 
-    public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
+    public virtual ICollection<TransactionDetail> TransactionDetail { get; set; } = new List<TransactionDetail>();
+
+    public virtual User? UpdatedUser { get; set; }
 }

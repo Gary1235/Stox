@@ -36,11 +36,13 @@ public class StockService : IStockService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFinnhubService _finnhubService;
+    private readonly IUserContext _userContext;
 
-    public StockService(IUnitOfWork unitOfWork, IFinnhubService finnhubService)
+    public StockService(IUnitOfWork unitOfWork, IFinnhubService finnhubService, IUserContext userContext)
     {
         _unitOfWork = unitOfWork;
         _finnhubService = finnhubService;
+        _userContext = userContext;
     }
 
     public List<StockViewModel> GetStockList(StockSearchViewModel search)
@@ -100,7 +102,8 @@ public class StockService : IStockService
             OriginalQty = model.TradeQty,
             RemainingQty = model.TradeQty,
             CostPrice = model.TradePrice,
-            CreatedDate = DateTime.Now
+            CreatedDate = DateTime.Now,
+            CreatedUserId = _userContext.UserId
         };
 
         // 寫入交易紀錄
@@ -116,9 +119,10 @@ public class StockService : IStockService
             Price = model.TradePrice,
             Fee = fee,
             TotalAmount = (model.TradeQty * model.TradePrice) + fee,
-            CreatedDate = DateTime.Now
+            CreatedDate = DateTime.Now,
+            CreatedUserId = _userContext.UserId,
         };
-        transaction.InventoryLots.Add(inventory);
+        transaction.InventoryLot.Add(inventory);
 
         _unitOfWork.GetRepository<Transaction>().Add(transaction);
         result = await _unitOfWork.SaveChangesAsync();
@@ -169,7 +173,8 @@ public class StockService : IStockService
             Price = model.TradePrice,
             Fee = 0, // 不計算手續費
             TotalAmount = totalSellAmount, // 單純 數量 * 單價
-            CreatedDate = DateTime.Now
+            CreatedDate = DateTime.Now,
+            CreatedUserId = _userContext.UserId,
         };
         _unitOfWork.GetRepository<Transaction>().Add(transaction);
 

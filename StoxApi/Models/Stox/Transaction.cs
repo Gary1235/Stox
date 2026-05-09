@@ -27,7 +27,9 @@ public partial class Transaction
 
     public DateTime CreatedDate { get; set; }
 
-    public virtual ICollection<InventoryLot> InventoryLots { get; set; } = new List<InventoryLot>();
+    public virtual User CreatedUser { get; set; } = null!;
 
-    public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
+    public virtual ICollection<InventoryLot> InventoryLot { get; set; } = new List<InventoryLot>();
+
+    public virtual ICollection<TransactionDetail> TransactionDetail { get; set; } = new List<TransactionDetail>();
 }
