@@ -1,13 +1,17 @@
+using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.EntityFrameworkCore;
 using StoxApi.Models.Stox;
 
-public interface IStockService
+public interface IPortfolioService
 {
     /// <summary>
     /// 取出 庫存列表
     /// </summary>
     /// <param name="search"></param>
     /// <returns></returns>
-    public List<StockViewModel> GetStockList(StockSearchViewModel search);
+    public Task<List<StockViewModel>> GetStockListAsync(StockSearchViewModel search);
     /// <summary>
     /// 買入
     /// </summary>
@@ -19,33 +23,44 @@ public interface IStockService
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    public SaveChangeResult SellStock(TransactionViewModel model);
+    public Task<SaveChangeResult> SellStockAsync(TransactionViewModel model);
     /// <summary>
     /// 取得 所有已追蹤的股票即時價格
     /// </summary>
     /// <returns></returns>
-    public Task<List<StockQuoteViewModel>> GetAllStockQuote();
+    public Task<List<StockQuoteViewModel>> GetAllStockQuoteAsync();
     /// <summary>
     /// 計入每日股價(開盤、收盤、當日最高/低)
     /// </summary>
     /// <returns></returns>
     public SaveChangeResult RecordDailyPrice();
+    /// <summary>
+    /// 取得 所有美股標的(csv檔)
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    public Task<SaveChangeResult> MapCsvToStockMaster(string filePath);
+    /// <summary>
+    /// 取得 所有股票選單
+    /// </summary>
+    /// <returns></returns>
+    public Task<List<StockOptionViewModel>> GetStockOptionsAsync();
 }
 
-public class StockService : IStockService
+public class PortfolioService : IPortfolioService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFinnhubService _finnhubService;
     private readonly IUserContext _userContext;
 
-    public StockService(IUnitOfWork unitOfWork, IFinnhubService finnhubService, IUserContext userContext)
+    public PortfolioService(IUnitOfWork unitOfWork, IFinnhubService finnhubService, IUserContext userContext)
     {
         _unitOfWork = unitOfWork;
         _finnhubService = finnhubService;
         _userContext = userContext;
     }
 
-    public List<StockViewModel> GetStockList(StockSearchViewModel search)
+    public async Task<List<StockViewModel>> GetStockListAsync(StockSearchViewModel search)
     {
         var list = new List<StockViewModel>();
 
@@ -57,7 +72,7 @@ public class StockService : IStockService
             query = query.Where(x => (x.StockCode != null && x.StockCode.Contains(keyword)) || (x.StockName != null && x.StockName.Contains(keyword)));
         }
 
-        list = query
+        var groups = await query
         .GroupBy(x => new { x.StockCode, x.StockName })
         .Select(x => new
         {
@@ -66,8 +81,9 @@ public class StockService : IStockService
             TotalQty = x.Sum(s => s.RemainingQty),
             TotalAmount = x.Sum(s => s.CostPrice * s.RemainingQty),
         })
-        .AsEnumerable()
-        .Select(x => new StockViewModel
+        .ToListAsync();
+
+        list = groups.Select(x => new StockViewModel
         {
             Code = x.Code,
             Name = x.Name,
@@ -134,7 +150,7 @@ public class StockService : IStockService
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    public SaveChangeResult SellStock(TransactionViewModel model)
+    public async Task<SaveChangeResult> SellStockAsync(TransactionViewModel model)
     {
         var result = new SaveChangeResult();
 
@@ -145,10 +161,10 @@ public class StockService : IStockService
         }
 
         // 2. 取出該股票的剩餘庫存 (FIFO 先進先出)
-        var inventories = _unitOfWork.GetRepository<InventoryLot>()
+        var inventories = await _unitOfWork.GetRepository<InventoryLot>()
             .Where(x => x.StockCode == model.Code && x.RemainingQty > 0)
             .OrderBy(x => x.BuyDate)
-            .ToList();
+            .ToListAsync();
 
         // 3. 檢查庫存是否充足 (防止超賣)
         decimal totalRemaining = inventories.Sum(x => x.RemainingQty);
@@ -164,7 +180,6 @@ public class StockService : IStockService
         var transaction = new Transaction
         {
             Id = Guid.CreateVersion7(),
-            // CreatedUserId = currentUserId, // TODO: 記得補上當前登入使用者的 ID
             StockCode = model.Code,
             StockName = model.Name,
             TradeDate = model.TradeDate,
@@ -221,7 +236,7 @@ public class StockService : IStockService
         }
 
         // 7. 一次性提交所有變更
-        result = _unitOfWork.SaveChanges();
+        result = await _unitOfWork.SaveChangesAsync();
 
         return result;
     }
@@ -230,14 +245,14 @@ public class StockService : IStockService
     /// 取得 所有已追蹤的股票即時價格
     /// </summary>
     /// <returns></returns>
-    public async Task<List<StockQuoteViewModel>> GetAllStockQuote()
+    public async Task<List<StockQuoteViewModel>> GetAllStockQuoteAsync()
     {
         var stockQuotes = new List<StockQuoteViewModel>();
 
-        var allStockCode = _unitOfWork.GetRepository<InventoryLot>().AsNoTracking()
+        var allStockCode = await _unitOfWork.GetRepository<InventoryLot>().AsNoTracking()
         .Select(x => x.StockCode)
         .Distinct()
-        .ToList();
+        .ToListAsync();
 
         foreach (var code in allStockCode)
         {
@@ -247,7 +262,7 @@ public class StockService : IStockService
             {
                 stockQuotes.Add(new StockQuoteViewModel
                 {
-                    Code = code,
+                    Symbol = code,
                     LivePrice = quote.CurrentPrice,
                 });
             }
@@ -258,10 +273,6 @@ public class StockService : IStockService
         return stockQuotes;
     }
 
-    /// <summary>
-    /// 計入每日股價(開盤、收盤、當日最高/低)
-    /// </summary>
-    /// <returns></returns>
     public SaveChangeResult RecordDailyPrice()
     {
         // 只記錄有追蹤的股票
@@ -269,5 +280,56 @@ public class StockService : IStockService
         // 意義??
 
         return SaveChangeResult.Failure("此功能需要在想一下細節");
+    }
+
+    public async Task<SaveChangeResult> MapCsvToStockMaster(string filePath)
+    {
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HasHeaderRecord = true,
+            PrepareHeaderForMatch = args => args.Header.Trim(), // 自動修剪欄位空格
+            MissingFieldFound = null // 忽略缺少的欄位
+        };
+
+        using var reader = new StreamReader(filePath);
+        using var csv = new CsvReader(reader, config);
+
+        // 讀取 CSV 並轉換
+        var records = csv.GetRecords<StockCsvRecord>();
+
+        foreach (var record in records)
+        {
+            var master = new StockMaster
+            {
+                Id = Guid.NewGuid(),
+                Symbol = record.Symbol.Trim(),
+                Name = record.Name.Trim(),
+                Market = "US",            // 既然是這個格式，通常是美股
+                Currency = "USD",
+                Sector = record.Sector,
+                SearchKeywords = $"{record.Symbol},{record.Name}", // 預設搜尋關鍵字
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            _unitOfWork.GetRepository<StockMaster>().Add(master);
+        }
+
+        var result = await _unitOfWork.SaveChangesAsync();
+
+        return result.IsSuccess ? SaveChangeResult.Success("美股更新成功") : SaveChangeResult.Failure("美股更新失敗");
+    }
+
+    public async Task<List<StockOptionViewModel>> GetStockOptionsAsync()
+    {
+        var options = await _unitOfWork.GetRepository<StockMaster>().AsNoTracking()
+        .Select(x => new StockOptionViewModel
+        {
+            Symbol = x.Symbol,
+            Name = x.Name,
+        })
+        .ToListAsync();
+
+        return options;
     }
 }

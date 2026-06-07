@@ -1,0 +1,210 @@
+/* --- 變數定義 (可被父層覆蓋) --- */
+:host {
+    display: block;
+    --primary-color: #3b82f6;
+    /* Tailwind Blue 500 */
+    --primary-hover: #eff6ff;
+    /* Tailwind Blue 50 */
+    --border-color: #d1d5db;
+    --text-main: #1f2937;
+    --text-muted: #9ca3af;
+    --bg-panel: #ffffff;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --shadow-panel: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* --- 觸發器 (Trigger) --- */
+.select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    padding: 6px 12px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.select-trigger:hover {
+    border-color: #9ca3af;
+}
+
+.select-trigger.is-open,
+.select-trigger:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.trigger-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.placeholder {
+    color: var(--text-muted);
+    line-height: 28px;
+}
+
+.single-value {
+    color: var(--text-main);
+    line-height: 28px;
+}
+
+/* --- 複選 Chips --- */
+.chip {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-hover);
+    color: var(--primary-color);
+    padding: 2px 8px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.chip-remove {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 16px;
+    margin-left: 4px;
+    cursor: pointer;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+}
+
+.chip-remove:hover {
+    color: #1d4ed8;
+}
+
+.trigger-icon {
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    display: flex;
+}
+
+.trigger-icon.rotated {
+    transform: rotate(180deg);
+}
+
+/* --- 浮層面板 (Overlay Panel) --- */
+/* --- 浮層面板 (Overlay Panel) 及其內部元素 --- */
+
+/* 🌟 加上 ::ng-deep 穿透，並寫死色碼與寬度 */
+::ng-deep .select-panel {
+    background: #ffffff;
+    /* 修復背景透明 */
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    width: 100%;
+    /* 🌟 關鍵：撐滿 CDK 賦予的寬度 */
+    margin-top: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+::ng-deep .search-box {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+    gap: 8px;
+}
+
+::ng-deep .search-icon {
+    flex-shrink: 0;
+    color: #9ca3af;
+}
+
+::ng-deep .search-box input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    outline: none;
+    color: #1f2937;
+    padding: 2px 0;
+}
+
+::ng-deep .options-list {
+    max-height: 260px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+::ng-deep .option-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    min-width: 0;
+    color: #1f2937;
+    cursor: pointer;
+}
+
+::ng-deep .option-item:hover {
+    background-color: #f3f4f6;
+}
+
+::ng-deep .option-item.selected {
+    background-color: #eff6ff;
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+::ng-deep .option-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+::ng-deep .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+::ng-deep .checkbox.checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+::ng-deep .single-check {
+    color: #3b82f6;
+}
+
+::ng-deep .empty-state {
+    padding: 16px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+/* --- 高亮樣式 (供 Pipe 使用) --- */
+::ng-deep .highlight-text {
+    background-color: #fef08a;
+    /* Tailwind Yellow 200 */
+    color: #854d0e;
+    border-radius: 2px;
+    padding: 0 2px;
+    font-weight: bold;
+}

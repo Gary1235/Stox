@@ -19,6 +19,8 @@ public partial class User
 
     public DateTime? UpdatedDate { get; set; }
 
+    public virtual ICollection<CapitalFlow> CapitalFlow { get; set; } = new List<CapitalFlow>();
+
     public virtual ICollection<InventoryLot> InventoryLotCreatedUser { get; set; } = new List<InventoryLot>();
 
     public virtual ICollection<InventoryLot> InventoryLotUpdatedUser { get; set; } = new List<InventoryLot>();

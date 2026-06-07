@@ -67,8 +67,10 @@ Extension/
 Models/
  Stox.Partial/InventoryLot.Partial.cs
  Stox/
+  CapitalFlow.cs
   InventoryLot.cs
   StockDailyPrice.cs
+  StockMaster.cs
   StoxContext.cs
   Transaction.cs
   TransactionDetail.cs
@@ -89,11 +91,13 @@ UnitOfWork/
  IRepository.cs
  IUnitOfWork.cs
 ViewModels/
+ capitalFlowViewModel.cs
  CommonViewModel.cs
  FinnhubViewModel.cs
  LoginViewModel.cs
  MailViewModel.cs
  StockViewModel.cs
+ YahooApiViewModel.cs
 WeatherForecast.cs
 
 [metadataReferences]
@@ -410,6 +414,7 @@ WeatherForecast.cs
  azure.core/1.47.1/lib/net8.0/Azure.Core.dll
  azure.identity/1.14.2/lib/net8.0/Azure.Identity.dll
  bouncycastle.cryptography/2.6.2/lib/net6.0/BouncyCastle.Cryptography.dll
+ csvhelper/33.1.0/lib/net9.0/CsvHelper.dll
  hangfire.aspnetcore/1.8.23/lib/netcoreapp3.0/Hangfire.AspNetCore.dll
  hangfire.core/1.8.23/lib/netstandard2.0/Hangfire.Core.dll
  hangfire.netcore/1.8.23/lib/netstandard2.1/Hangfire.NetCore.dll

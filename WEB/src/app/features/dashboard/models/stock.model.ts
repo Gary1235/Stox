@@ -77,3 +77,13 @@ export interface TransactionViewModel {
   /** 交易行為 (買進/賣出) */
   actionType: TransactionType;
 }
+
+export interface StockOptionViewModel {
+  symbol: string | null;
+  name: string | null
+}
+
+export interface StockQuoteViewModel {
+  symbol: string | null;
+  livePrice: number;
+}

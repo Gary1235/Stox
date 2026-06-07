@@ -5,24 +5,28 @@
   </div>
 
   <div class="summary-grid">
-    <div class="card summary-card">
-      <h3>總市值 (USD)</h3>
-      <div class="value">{{ portfolio.totalValue | currency: 'USD' }}</div>
-    </div>
-
-    <div class="card summary-card">
-      <h3>總損益</h3>
-      <div class="value" [class.profit]="portfolio.totalGainLoss > 0" [class.loss]="portfolio.totalGainLoss < 0">
-        {{ portfolio.totalGainLoss > 0 ? '+' : '' }}{{ portfolio.totalGainLoss | currency: 'USD' }}
-      </div>
-      <div class="sub-text">自建倉以來</div>
-    </div>
-
-    <div class="card summary-card">
-      <h3>持有檔數</h3>
-      <div class="value">{{ portfolio.holdingCount }} 檔</div>
-    </div>
+  <!-- 1. 總市值 -->
+  <div class="card summary-card">
+    <h3>總市值 (USD)</h3>
+    <div class="value">{{ portfolio.totalValue | currency: 'USD' }}</div>
   </div>
+
+  <!-- 2. 實際投入資金 (新加入) -->
+  <div class="card summary-card">
+    <h3>實際投入資金</h3>
+    <div class="value">{{ portfolio.totalValue| currency: 'USD' }}</div>
+    <div class="sub-text">歷史買入總成本</div>
+  </div>
+
+  <!-- 3. 總損益 (移至右側作為成果呈現) -->
+  <div class="card summary-card">
+    <h3>總損益</h3>
+    <div class="value" [class.profit]="portfolio.totalGainLoss > 0" [class.loss]="portfolio.totalGainLoss < 0">
+      {{ portfolio.totalGainLoss > 0 ? '+' : '' }}{{ portfolio.totalGainLoss | currency: 'USD' }}
+    </div>
+    <div class="sub-text">自建倉以來</div>
+  </div>
+</div>
 
   <div class="detail-area">
     <div class="card table-card">

@@ -13,7 +13,7 @@ public interface IFinnhubService
 public class FinnhubService : IFinnhubService
 {
     private readonly HttpClient _httpClient;
-    private const string ApiKey = ""; // 建議從環境變數或 User Secrets 讀取
+    private const string ApiKey = "d7dmr89r01qggoeotrl0d7dmr89r01qggoeotrlg"; // 建議從環境變數或 User Secrets 讀取
 
     public FinnhubService(HttpClient httpClient)
     {

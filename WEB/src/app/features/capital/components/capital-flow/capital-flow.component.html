@@ -1,0 +1,279 @@
+<div class="app-container">
+  <input 
+    type="checkbox" 
+    id="modal-toggle" 
+    class="modal-checkbox" 
+    [checked]="isModalOpen()" 
+    (change)="isModalOpen.set($any($event.target).checked)" 
+  />
+
+  <main class="main-content">
+    <div class="content-header">
+      <div class="header-text-group">
+        <h1 class="page-title">現金流明細</h1>
+        <p class="page-subtitle">追蹤您的資金流入、流出及每日淨值變化</p>
+      </div>
+      <label for="modal-toggle" class="btn-primary" (click)="isModalOpen.set(true)">
+        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        新增明細
+      </label>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div>
+            <p class="stat-label">總實際流入 (USD)</p>
+            <h3 class="stat-value text-emerald">${{ totalInflow() | number:'1.0-2' }}</h3>
+          </div>
+          <span class="stat-icon-wrapper bg-emerald-light text-emerald">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+          </span>
+        </div>
+        <p class="stat-footer">歷史總薪資與投資回收</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div>
+            <p class="stat-label">總實際流出 (USD)</p>
+            <h3 class="stat-value text-rose">${{ totalOutflow() | number:'1.0-2' }}</h3>
+          </div>
+          <span class="stat-icon-wrapper bg-rose-light text-rose">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+              <polyline points="17 18 23 18 23 12"></polyline>
+            </svg>
+          </span>
+        </div>
+        <p class="stat-footer">歷史總開支與再投資撥款</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div>
+            <p class="stat-label">淨剩餘現金流 (USD)</p>
+            <h3 class="stat-value text-blue">${{ netCashFlow() | number:'1.0-2' }}</h3>
+          </div>
+          <span class="stat-icon-wrapper bg-blue-light text-blue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 8l4 4H8z"></path>
+            </svg>
+          </span>
+        </div>
+        @if (summary()) {
+          <p class="stat-footer">資料庫總資本：NT$ {{ summary()?.totalTwdCapital | number }}</p>
+        } @else {
+          <p class="stat-footer">自記帳開始以來的淨額</p>
+        }
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="tab-group">
+        <button 
+          class="tab-btn" 
+          [class.active]="currentFlowType() === CapitalFlowType.Both" 
+          (click)="setFlowType(CapitalFlowType.Both)">全部明細</button>
+        <button 
+          class="tab-btn text-emerald-hover" 
+          [class.active]="currentFlowType() === CapitalFlowType.Deposit" 
+          (click)="setFlowType(CapitalFlowType.Deposit)">收入流入</button>
+        <button 
+          class="tab-btn text-rose-hover" 
+          [class.active]="currentFlowType() === CapitalFlowType.Withdraw" 
+          (click)="setFlowType(CapitalFlowType.Withdraw)">支出流出</button>
+      </div>
+
+      <div class="search-wrapper">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input 
+          type="text" 
+          placeholder="搜尋類別、備註說明..." 
+          class="search-input"
+          [ngModel]="searchKeyword()"
+          (ngModelChange)="searchKeyword.set($event)" 
+        />
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="scrollable-table">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="clickable-th"><div class="th-content">日期</div></th>
+              <th class="clickable-th"><div class="th-content">交易類型</div></th>
+              <th class="clickable-th"><div class="th-content">收支類別</div></th>
+              <th class="clickable-th text-right"><div class="th-content justify-end">金額 (USD)</div></th>
+              <th>備註說明</th>
+              <th class="text-center">動作</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filteredList(); track item.id) {
+              <tr class="table-row">
+                <td class="td-date">{{ item.transactionDate | date:'yyyy-MM-dd' }}</td>
+                <td>
+                  @if (item.flowType === CapitalFlowType.Deposit) {
+                    <span class="badge badge-income">● 收入</span>
+                  } @else {
+                    <span class="badge badge-expense">● 支出</span>
+                  }
+                </td>
+                <td class="td-category">{{ parseCategory(item.note) }}</td>
+                <td class="td-amount text-right" [ngClass]=" 'text-rose'">
+                  {{ item.flowType === CapitalFlowType.Deposit ? '+' : '-' }}${{ item.amount | number:'1.0-2' }}
+                </td>
+                <td class="td-description" [title]="parseNoteContent(item.note)">
+                  {{ parseNoteContent(item.note) }}
+                </td>
+                <td class="text-center">
+                  <button class="btn-delete" title="刪除此筆記錄" (click)="deleteItem(item.id)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      <line x1="10" y1="11" x2="10" y2="17"></line>
+                      <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center" style="padding: 2rem; color: #888;">
+                  查無任何現金流明細資料。
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <span>顯示 {{ filteredList().length }} 筆明細</span>
+        <span>
+          數據庫最後交易日：{{ summary()?.lastTransactionDate ? (summary()?.lastTransactionDate | date:'yyyy-MM-dd HH:mm') : '無資料' }}
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">新增現金流記錄</h3>
+        <label for="modal-toggle" class="modal-close-btn" (click)="isModalOpen.set(false)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </label>
+      </div>
+
+      <form (ngSubmit)="submitForm()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">明細種類</label>
+            <div class="form-toggle-group">
+              <button 
+                type="button" 
+                class="toggle-btn toggle-btn-expense" 
+                [class.active]="formFlowType() === CapitalFlowType.Withdraw"
+                (click)="formFlowType.set(CapitalFlowType.Withdraw)">提領現金</button>
+              <button 
+                type="button" 
+                class="toggle-btn toggle-btn-income" 
+                [class.active]="formFlowType() === CapitalFlowType.Deposit"
+                (click)="formFlowType.set(CapitalFlowType.Deposit)">投入現金</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="date" class="form-label">日期</label>
+            <input 
+              id="date" 
+              type="date" 
+              class="form-input"
+              [ngModel]="formDate()" 
+              (ngModelChange)="formDate.set($event)"
+              name="formDate" 
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="amount" class="form-label">金額 (NTD)</label>
+            <div class="amount-input-wrapper">
+              <span class="currency-prefix">$</span>
+              <input 
+                id="amount" 
+                type="number" 
+                placeholder="0.00" 
+                class="form-input pl-input"
+                [ngModel]="formAmount()" 
+                (ngModelChange)="formAmount.set($event)"
+                name="formAmount" 
+              />
+            </div>
+          </div>
+
+          <!-- <div class="form-group">
+            <label for="category" class="form-label">交易類別</label>
+            <select 
+              id="category" 
+              class="form-input"
+              [ngModel]="formCategory()" 
+              (ngModelChange)="formCategory.set($event)"
+              name="formCategory"
+            >
+              @if (formFlowType() === CapitalFlowType.Withdraw) {
+                <option value="生活支出">生活支出</option>
+                <option value="房租水電">房租水電</option>
+                <option value="投資支出">投資支出</option>
+                <option value="娛樂社交">娛樂社交</option>
+                <option value="其他支出">其他支出</option>
+              } @else {
+                <option value="主動收入">主動收入</option>
+                <option value="投資收益">投資收益</option>
+                <option value="兼職副業">兼職副業</option>
+                <option value="其他收入">其他收入</option>
+              }
+            </select>
+          </div> -->
+
+          <div class="form-group">
+            <label for="description" class="form-label">備註說明</label>
+            <textarea 
+              id="description" 
+              rows="3" 
+              placeholder="例如：薪資轉帳、生活用品採買..." 
+              class="form-input"
+              [ngModel]="formNote()" 
+              (ngModelChange)="formNote.set($event)"
+              name="formNote"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <label for="modal-toggle" class="btn-secondary" (click)="isModalOpen.set(false)"> 取消 </label>
+          <button type="submit" class="btn-submit" [ngClass]="formFlowType() === CapitalFlowType.Withdraw ? 'btn-submit-expense' : 'btn-submit-income'">
+            確認新增
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

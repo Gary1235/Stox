@@ -1,11 +1,14 @@
-import { Component, computed, signal, TemplateRef, ViewChild, OnInit, inject } from '@angular/core';
+import { Component, computed, signal, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 import { ChartData, PieChartComponent } from 'src/app/shared/components/pie-chart/pie-chart.component';
 import { Column, PagedResult, SharedListComponent } from 'src/app/shared/components/shared-list/shared-list.component';
-import { PortfolioSummary, StockSearchViewModel, StockViewModel, TransactionType, TransactionViewModel } from '@features/dashboard/models/stock.model';
+import { PortfolioSummary, StockOptionViewModel, StockQuoteViewModel, StockSearchViewModel, StockViewModel, TransactionType, TransactionViewModel } from '@features/dashboard/models/stock.model';
 import { StockApiService } from '@features/dashboard/services/stock.api';
 import { ModalComponent } from '@components/modal/modal.component';
-import { TransactionFormComponent } from '../transaction-form/transaction-form.component';
+import { TransactionFormComponent } from '../../../transaction/components/transaction-form/transaction-form.component';
+import { StockParamService } from '@features/dashboard/services/stock.param';
+import { TransactionApiService } from '@features/transaction/services/transaction.api';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,8 +17,12 @@ import { TransactionFormComponent } from '../transaction-form/transaction-form.c
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private stockApiService = inject(StockApiService);
+  private transactionApiService = inject(TransactionApiService);
+  private stockParam = inject(StockParamService);
+  private destroy$ = new Subject<void>();
+  private quoteRefreshIntervalMs = 10000;
 
   detailColumns: Column[] = [];
 
@@ -35,11 +42,22 @@ export class DashboardComponent implements OnInit {
 
   actionType = signal<TransactionType>(TransactionType.Buy);
 
+  lastQuoteUpdate = signal<string>('尚未更新');
+
+  realCapital = signal<number>(0);
+
   constructor() {}
 
   ngOnInit() {
     this.setColumns();
     this.getStockList();
+    this.getTotalRealCapital();
+    this.startQuotePolling();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setColumns() {
@@ -102,6 +120,65 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         console.error('取得股票列表失敗', err);
       },
+    });
+  }
+
+  private startQuotePolling() {
+    interval(this.quoteRefreshIntervalMs)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.stockApiService.getStockQuote()),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (quotes) => this.applyLiveQuotes(quotes),
+        error: (err) => {
+          console.error('取得即時報價失敗', err);
+        },
+      });
+  }
+
+  private applyLiveQuotes(quotes: StockQuoteViewModel[]) {
+    const currentList = this.stockListSignal();
+    if (!currentList.length) {
+      return;
+    }
+
+    const quoteMap = new Map<string, number>();
+    quotes.forEach((quote) => {
+      if (quote.symbol && quote.livePrice != null) {
+        quoteMap.set(quote.symbol, quote.livePrice);
+      }
+    });
+
+    const updatedList = currentList.map((item) => {
+      const livePrice = item.code ? quoteMap.get(item.code) : undefined;
+      if (livePrice == null) {
+        return item;
+      }
+
+      const totalCost = item.quantity * item.avgCost;
+      const currentValue = item.quantity * livePrice;
+      const gainLoss = currentValue - totalCost;
+
+      return {
+        ...item,
+        closePrice: livePrice,
+        totalCost,
+        currentValue,
+        gainLoss,
+      };
+    });
+
+    this.rowData.list = updatedList;
+    this.stockListSignal.set(updatedList);
+    this.calculatePortfolio(updatedList);
+    this.lastQuoteUpdate.set(new Date().toLocaleTimeString());
+  }
+
+  getTotalRealCapital() {
+    this.stockApiService.getTotalRealCapital().subscribe(total => {
+      this.realCapital.set(total);
     });
   }
 
@@ -173,7 +250,7 @@ export class DashboardComponent implements OnInit {
    */
   handleTransactionSubmit(transaction: TransactionViewModel) {
     // 依據表單回傳的 actionType 決定呼叫哪支 API
-    const apiCall$ = transaction.actionType === TransactionType.Buy ? this.stockApiService.buyStock(transaction) : this.stockApiService.sellStock(transaction);
+    const apiCall$ = transaction.actionType === TransactionType.Buy ? this.transactionApiService.buyStock(transaction) : this.transactionApiService.sellStock(transaction);
 
     apiCall$.subscribe({
       next: (res) => {

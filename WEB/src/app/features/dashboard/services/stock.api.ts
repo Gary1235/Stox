@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { StockSearchViewModel, StockViewModel, TransactionViewModel } from '../models/stock.model';
+import { StockOptionViewModel, StockQuoteViewModel, StockSearchViewModel, StockViewModel, TransactionViewModel } from '../models/stock.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,20 +19,15 @@ export class StockApiService {
     return this.http.post<StockViewModel[]>('Stock/GetStockList', searchParams);
   }
 
-  /**
-   * 買入股票
-   *
-   */
-  buyStock(transaction: TransactionViewModel): Observable<any> {
-    // 若後端有回傳特定的 Result Model，可以將 any 替換成該 Model 型別
-    return this.http.post<any>('Stock/BuyStock', transaction);
+  getTotalRealCapital(): Observable<number> {
+    return this.http.post<number>('Stock/GetTotalRealCapitalAsync', null);
   }
 
-  /**
-   * 賣出股票
-   *
-   */
-  sellStock(transaction: TransactionViewModel): Observable<any> {
-    return this.http.post<any>('Stock/SellStock', transaction);
+  getStockOptions(): Observable<StockOptionViewModel[]> {
+    return this.http.post<StockOptionViewModel[]>('Stock/GetStockOptions', null);
+  }
+
+  getStockQuote(): Observable<StockQuoteViewModel[]> {
+    return this.http.post<StockQuoteViewModel[]>('Stock/GetAllStockQuote', null);
   }
 }

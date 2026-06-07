@@ -21,15 +21,15 @@ public class SaveChangeResult
 
     public static SaveChangeResult Failure(string msg)
         => new SaveChangeResult { IsSuccess = false, Message = msg };
-
-    public static SaveChangeResult<T> Success<T>(T data, string? msg = null)
-        => new SaveChangeResult<T> { IsSuccess = true, Data = data, Message = msg };
-
-    public static SaveChangeResult<T> Failure<T>(string msg)
-        => new SaveChangeResult<T> { IsSuccess = false, Message = msg };
 }
 
 public class SaveChangeResult<T> : SaveChangeResult
 {
     public T? Data { get; internal set; }
+
+    public static SaveChangeResult<T> Success(T data, string? msg = null)
+        => new SaveChangeResult<T> { IsSuccess = true, Data = data, Message = msg };
+
+    public static new SaveChangeResult<T> Failure(string msg)
+        => new SaveChangeResult<T> { IsSuccess = false, Message = msg };
 }

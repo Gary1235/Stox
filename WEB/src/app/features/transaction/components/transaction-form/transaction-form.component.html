@@ -12,8 +12,10 @@
 
   <div class="form-group">
     <label>股票代碼</label>
-    <input type="text" formControlName="code" placeholder="例如: AAPL" />
-    <div class="error" *ngIf="tradeForm.get('code')?.touched && tradeForm.get('code')?.errors?.['required']">請輸入股票代碼</div>
+    <!-- <input type="text" formControlName="code" placeholder="例如: AAPL" /> -->
+    <app-select [options]="stockOptions()" (change)="stockChange($event)" formControlName="code"></app-select>
+    <div class="error" *ngIf="tradeForm.get('code')?.touched && tradeForm.get('code')?.errors?.['required']">請輸入股票代碼
+    </div>
   </div>
 
   <div class="form-group">

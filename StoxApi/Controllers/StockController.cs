@@ -6,17 +6,17 @@ namespace StoxApi.Controllers
     [Route("api/[controller]")]
     public class StockController : ControllerBase
     {
-        private readonly IStockService _stockService;
+        private readonly IPortfolioService _stockService;
 
-        public StockController(IStockService stockService)
+        public StockController(IPortfolioService stockService)
         {
             _stockService = stockService;
         }
 
         [HttpPost("GetStockList")]
-        public IActionResult GetStockList(StockSearchViewModel search)
+        public async Task<IActionResult> GetStockList(StockSearchViewModel search)
         {
-            var list = _stockService.GetStockList(search);
+            var list = await _stockService.GetStockListAsync(search);
 
             return Ok(list);
         }
@@ -30,11 +30,35 @@ namespace StoxApi.Controllers
         }
 
         [HttpPost("SellStock")]
-        public IActionResult SellStock(TransactionViewModel model)
+        public async Task<IActionResult> SellStock(TransactionViewModel model)
         {
-            var result = _stockService.SellStock(model);
+            var result = await _stockService.SellStockAsync(model);
 
             return Ok(result);
+        }
+
+        [HttpPost("MapCsvToStockMaster")]
+        public async Task<IActionResult> MapCsvToStockMaster()
+        {
+            var result = await _stockService.MapCsvToStockMaster(@"C:\Gary\SideProject\Stox\StoxApi\Data\nasdaq_screener_1778393810671.csv");
+
+            return Ok(result);
+        }
+
+        [HttpPost("GetAllStockQuote")]
+        public async Task<IActionResult> GetAllStockQuote()
+        {
+            var quotes = await _stockService.GetAllStockQuoteAsync();
+
+            return Ok(quotes);
+        }
+
+        [HttpPost("GetStockOptions")]
+        public async Task<IActionResult> GetStockOptions()
+        {
+            var options = await _stockService.GetStockOptionsAsync();
+
+            return Ok(options);
         }
     }
 }

@@ -71,9 +71,24 @@ public class StockQuoteViewModel
     /// <summary>
     /// 股票代碼
     /// </summary>
-    public string? Code { get; set; }
+    public string? Symbol { get; set; }
     /// <summary>
     /// 最新價格
     /// </summary>
     public decimal LivePrice { get; set; }
+}
+
+/// <summary>
+/// 股票選單
+/// </summary>
+public class StockOptionViewModel
+{
+    /// <summary>
+    /// 股票代號
+    /// </summary>
+    public string? Symbol { get; set; }
+    /// <summary>
+    /// 股票名稱
+    /// </summary>
+    public string? Name { get; set; }
 }

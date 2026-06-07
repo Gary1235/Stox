@@ -10,9 +10,9 @@ public static class HangfireJobScheduler
 
         // 註冊你的定期任務
         // 注意這裡的寫法：泛型傳入介面，Hangfire 會自動從 DI 容器把實作類別解析出來
-        RecurringJob.AddOrUpdate<IStockService>(
+        RecurringJob.AddOrUpdate<IPortfolioService>(
             "Daily-Report-Job", // 任務的唯一 ID
-            service => service.GetAllStockQuote(), // 呼叫的方法
+            service => service.GetAllStockQuoteAsync(), // 呼叫的方法
             "0 8 * * *", // Cron 表達式：每天早上 8 點
             new RecurringJobOptions { TimeZone = tz } 
         );
